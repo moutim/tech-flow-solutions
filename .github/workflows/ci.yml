@@ -1,0 +1,36 @@
+name: Controle de Qualidade TechFlow
+
+# Define que o pipeline roda em qualquer 'push' ou 'pull request' na branch main
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Baixa o código do seu repositório para a máquina virtual
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # 2. Configura o ambiente Python
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # 3. Instala as dependências listadas no seu requirements.txt
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Executa os testes automatizados
+      # O comando 'export PYTHONPATH' garante que o teste encontre o código dentro da pasta /src
+      - name: Rodar Testes com Pytest
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+          pytest tests/test_gerenciador.py
